@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🌐 Global custom styles */
+body {
+  @apply bg-gray-50 text-gray-900 font-sans min-h-screen;
+}
+
+h1, h2, h3, h4 {
+  @apply text-gray-800 font-semibold;
+}
+
+button {
+  @apply bg-blue-600 text-white px-4 py-2 rounded-lg font-medium
+  hover:bg-blue-700 active:scale-95 transition;
+}
+
+input, select {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full
+  focus:ring-2 focus:ring-blue-400 focus:outline-none;
+}
+
+.card {
+  @apply bg-white p-6 rounded-xl shadow hover:shadow-md transition;
+}
+
+.text-muted {
+  @apply text-gray-500;
+}
+
+.table-status {
+  @apply text-xs uppercase font-semibold tracking-wide;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
