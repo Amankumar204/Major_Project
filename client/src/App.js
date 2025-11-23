@@ -16,6 +16,7 @@ import WaiterDashboard from "./pages/WaiterDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Bill from "./pages/Bill";
 import ThankYou from "./pages/Thankyou";
+import HomePage from "./pages/HomePage";
 function App() {
   return (
     <Router>
@@ -35,7 +36,7 @@ function App() {
 	<Route path="/ai-assistant" element={<AIAssistantPage />} />
 	<Route path="/tables" element={<Tables />} />
   <Route path="/waiter-dashboard" element={<WaiterDashboard />} />
-        <Route path="/" element={<h2>Home Page</h2>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/bill" element={<Bill />} />
         <Route path="/thank-you" element={<ThankYou />} />

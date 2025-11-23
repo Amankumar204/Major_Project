@@ -1,38 +1,93 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ import navigation hook
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "../api";
 import "../styles/TableSelector.css";
 
 const TableSelector = () => {
-  const totalTables = Array.from({ length: 9 }, (_, i) => i + 1);
-  const [occupiedTables] = useState([3, 7]);
-  const [selectedTables, setSelectedTables] = useState([]);
-  const navigate = useNavigate(); // ✅ initialize navigation
+  const [tables, setTables] = useState([]);            // all tables from DB
+  const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState([]);  // selected table _ids
+  const navigate = useNavigate();
+
+  // Load tables from backend
+  useEffect(() => {
+    const loadTables = async () => {
+      try {
+        const res = await API.get("/tables"); // GET route you already have
+        setTables(res.data);                  // [{ _id, number, status, ... }]
+      } catch (err) {
+        console.error("Failed to load tables", err);
+        alert("Failed to load tables.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTables();
+  }, []);
 
   const handleClick = (table) => {
-    if (occupiedTables.includes(table)) return;
-    setSelectedTables((prev) =>
-      prev.includes(table)
-        ? prev.filter((t) => t !== table)
-        : [...prev, table]
+    // don't allow clicking already occupied tables
+    if (table.status === "occupied") return;
+
+    setSelectedIds((prev) =>
+      prev.includes(table._id)
+        ? prev.filter((id) => id !== table._id)
+        : [...prev, table._id]
     );
   };
 
   const getColor = (table) => {
-    if (occupiedTables.includes(table)) return "#f87171"; // red
-    if (selectedTables.includes(table)) return "#60a5fa"; // blue
+    if (table.status === "occupied") return "#f87171"; // red
+    if (selectedIds.includes(table._id)) return "#60a5fa"; // blue
     return "#86efac"; // green
   };
 
-  const handleConfirm = () => {
-    // Optional: prevent navigation if no table selected
-    if (selectedTables.length === 0) {
+  const handleConfirm = async () => {
+    if (selectedIds.length === 0) {
       alert("Please select at least one table before proceeding!");
       return;
     }
 
-    // ✅ Navigate to Assistant page and optionally pass selected tables
-    navigate("/assistant", { state: { selectedTables } });
+    try {
+      // mark each selected table as occupied in DB
+      await Promise.all(
+        selectedIds.map((id) => API.post(`/tables/occupy/${id}`))
+      );
+
+      // optional: update local state so UI reflects new status
+      setTables((prev) =>
+        prev.map((t) =>
+          selectedIds.includes(t._id)
+            ? { ...t, status: "occupied" }
+            : t
+        )
+      );
+
+      // pass selected table numbers to Assistant
+      const selectedTableNumbers = tables
+        .filter((t) => selectedIds.includes(t._id))
+        .map((t) => t.number);
+
+      navigate("/assistant", {
+        state: { selectedTables: selectedTableNumbers },
+      });
+    } catch (err) {
+      console.error("Failed to occupy tables", err);
+      alert("Failed to mark tables as occupied. Please try again.");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="table-container">
+        <div className="table-card">
+          <h2 className="title">Choose Your Table</h2>
+          <p>Loading tables...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="table-container">
@@ -40,14 +95,14 @@ const TableSelector = () => {
         <h2 className="title">Choose Your Table</h2>
 
         <div className="table-grid">
-          {totalTables.map((table) => (
+          {tables.map((table) => (
             <div
-              key={table}
+              key={table._id}
               className="table-box"
               style={{ backgroundColor: getColor(table) }}
               onClick={() => handleClick(table)}
             >
-              Table {table}
+              Table {table.number}
             </div>
           ))}
         </div>
@@ -57,8 +112,20 @@ const TableSelector = () => {
         </button>
 
         <div className="info">
-          <p><strong>Occupied:</strong> {occupiedTables.join(", ")}</p>
-          <p><strong>Selected:</strong> {selectedTables.join(", ") || "None"}</p>
+          <p>
+            <strong>Occupied:</strong>{" "}
+            {tables
+              .filter((t) => t.status === "occupied")
+              .map((t) => t.number)
+              .join(", ") || "None"}
+          </p>
+          <p>
+            <strong>Selected:</strong>{" "}
+            {tables
+              .filter((t) => selectedIds.includes(t._id))
+              .map((t) => t.number)
+              .join(", ") || "None"}
+          </p>
         </div>
       </div>
     </div>

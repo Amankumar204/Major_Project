@@ -36,25 +36,51 @@ router.post('/staff-signup', async (req, res) => {
 // POST /auth/staff-login
 router.post('/staff-login', async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { email, password } = req.body;
 
-    // look in cooks first, then waiters
-    let user = await Cook.findOne({ phone });
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Email and password are required' });
+    }
+
+    const normEmail = email.toLowerCase().trim();
+
+    // look in cooks first, then waiters (by email now)
+    let user = await Cook.findOne({ email: normEmail });
     let from = 'cook';
-    if (!user) { user = await Waiter.findOne({ phone }); from = 'waiter'; }
-    if (!user) return res.status(400).json({ message: 'Staff not found' });
+
+    if (!user) {
+      user = await Waiter.findOne({ email: normEmail });
+      from = 'waiter';
+    }
+
+    if (!user) {
+      return res.status(400).json({ message: 'Staff not found' });
+    }
 
     // const ok = await bcrypt.compare(password, user.password); // if hashing
     const ok = password === user.password; // plain compare (match your current setup)
-    if (!ok) return res.status(400).json({ message: 'Invalid password' });
+    if (!ok) {
+      return res.status(400).json({ message: 'Invalid password' });
+    }
 
     // Issue token if you have JWT logic; for now send dummy token
     const token = 'dummy-staff-token';
-    res.json({ token, user: { _id: user._id, name: user.name, phone: user.phone, role: from } });
+
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone, // keep if you still store it
+        role: from,
+      },
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Staff login error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
-
 module.exports = router;

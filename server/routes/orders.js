@@ -1,6 +1,8 @@
+// routes/orders.js
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
+const PreviousOrder = require("../models/PreviousOrder");
 
 function normalizeStatus(status) {
   const s = String(status || "").toLowerCase();
@@ -32,20 +34,39 @@ router.post("/create", async (req, res) => {
       });
     }
 
-    res.status(201).json({ message: "Order stored successfully", order: newOrder });
+    res
+      .status(201)
+      .json({ message: "Order stored successfully", order: newOrder });
   } catch (err) {
-    console.error(err);
+    console.error("Error creating order:", err);
     res.status(500).json({ message: "Failed to store order" });
   }
 });
 
-// GET all
+// GET all live/current orders
 router.get("/", async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
     res.json({ orders });
   } catch (err) {
+    console.error("Error fetching orders:", err);
     res.status(500).json({ message: "Failed to fetch orders" });
+  }
+});
+
+// 🔥 SALES ENDPOINT – this MUST be BEFORE "/:id"
+router.get("/sales", async (req, res) => {
+  try {
+    const previousOrders = await PreviousOrder.find()
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return res.json(previousOrders);
+  } catch (err) {
+    console.error("Error fetching sales:", err);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch sales data", error: String(err) });
   }
 });
 
@@ -56,6 +77,7 @@ router.get("/:id", async (req, res) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (err) {
+    console.error("Error fetching order:", err);
     res.status(500).json({ message: "Failed to fetch order" });
   }
 });
@@ -64,16 +86,23 @@ router.get("/:id", async (req, res) => {
 router.patch("/:id/status", async (req, res) => {
   try {
     const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
     if (!order) return res.status(404).json({ message: "Order not found" });
 
     const io = req.app.get("io");
     if (io) {
-      io.to(`order_${order._id}`).emit("order:update", { status: normalizeStatus(order.status) });
+      io.to(`order_${order._id}`).emit("order:update", {
+        status: normalizeStatus(order.status),
+      });
     }
 
     res.json({ message: "Order status updated", order });
   } catch (err) {
+    console.error("Error updating status:", err);
     res.status(500).json({ message: "Failed to update status" });
   }
 });
@@ -95,12 +124,12 @@ router.patch("/:id/serve", async (req, res) => {
 
     res.json({ message: "Order served successfully", order });
   } catch (err) {
+    console.error("Error marking served:", err);
     res.status(500).json({ message: "Failed to mark served" });
   }
 });
 
-const PreviousOrder = require("../models/PreviousOrder");
-
+// MOVE order to previousorders when bill is paid
 router.post("/:id/markPaid", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -110,15 +139,17 @@ router.post("/:id/markPaid", async (req, res) => {
       orderId: order._id,
       userEmail: order.userEmail,
       tableNo: order.tableNo,
-      items: order.items,
+      items: order.items,        // array of strings
       totalCost: order.totalCost,
       status: "paid",
       createdAt: order.createdAt,
     });
 
-    res.status(201).json({ message: "Order moved to previous orders", prevOrder });
+    res
+      .status(201)
+      .json({ message: "Order moved to previous orders", prevOrder });
   } catch (err) {
-    console.error(err);
+    console.error("Error moving to previousorders:", err);
     res.status(500).json({ message: "Failed to store in previous orders" });
   }
 });

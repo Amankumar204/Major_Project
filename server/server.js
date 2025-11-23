@@ -106,21 +106,6 @@ app.use('/api/menu', menuRoutes);
 app.use("/api/payment", stripeRoutes);
 app.use("/api/feedbacks", require("./routes/feedbackRoutes"));
 
-// --- quick fallback: GET /api/orders/:id (client uses once on mount)
-app.get('/api/orders/:id', async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ message: 'Order not found' });
-    res.json({
-      _id: order._id,
-      status: normalizeStatus(order.status),
-      etaSeconds: typeof order.etaSeconds === 'number' ? order.etaSeconds : null
-    });
-  } catch (e) {
-    console.error('GET /api/orders/:id error', e);
-    res.status(500).json({ message: 'Failed to fetch order' });
-  }
-});
 
 // background: clear expired holds every 30s
 setInterval(async () => {

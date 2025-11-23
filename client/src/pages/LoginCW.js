@@ -5,7 +5,7 @@ import '../styles/Login.css';
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function LoginCW() {
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -13,7 +13,8 @@ export default function LoginCW() {
   async function login(e) {
     e.preventDefault();
     try {
-      const res = await API.post('/auth/staff-login', { phone, password });
+      // 🔑 send email instead of phone
+      const res = await API.post('/auth/staff-login', { email, password });
 
       // ✅ Get role from the API response
       const role = res.data.user?.role || 'staff';
@@ -46,16 +47,16 @@ export default function LoginCW() {
         <p>Cook / Waiter — access your assigned tables.</p>
 
         <form onSubmit={login}>
-          <label htmlFor="phone">Phone Number</label>
+          <label htmlFor="email">Email</label>
           <div className="input-group">
             <input
-              type="tel"
-              id="phone"
-              placeholder="+91 95555 55555"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
+              type="email"
+              id="email"
+              placeholder="staff@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
             />
-            <span className="icon">📞</span>
+            <span className="icon">📧</span>
           </div>
 
           <label htmlFor="password">Password</label>
@@ -79,11 +80,12 @@ export default function LoginCW() {
 
           <div className="signup">
             User? <Link to="/login">Login here</Link> • Admin? <Link to="/login-admin">Login here</Link><br />
-            <span style={{ fontSize: '0.9rem', color: '#777' }}>Need access? <Link to="/signup-staff">Request account</Link></span>
+            <span style={{ fontSize: '0.9rem', color: '#777' }}>
+              Need access? <Link to="/signup-staff">Request account</Link>
+            </span>
           </div>
         </form>
       </div>
     </div>
   );
 }
-      

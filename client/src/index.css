@@ -32,6 +32,7 @@ input, select {
 .table-status {
   @apply text-xs uppercase font-semibold tracking-wide;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;

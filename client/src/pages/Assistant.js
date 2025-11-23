@@ -1,12 +1,21 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useContext,              // 👈 added
+} from "react";
 import "../styles/Assistant.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useNavigate } from "react-router-dom";
 import API from "../api"; // ✅ use your axios instance
+import { AuthContext } from "../context/AuthContext";  // 👈 added
 
 const Assistant = () => {
   const navigate = useNavigate();
   const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+
+  const { user } = useContext(AuthContext);  // 👈 logged-in user: { id, name, email, phone, role }
 
   // ── menu fetched from backend ───────────────────────────────
   const [menuItems, setMenuItems] = useState([]);     // flat array from DB
@@ -65,28 +74,44 @@ const Assistant = () => {
 
   // ── chat + ordering state ───────────────────────────────────
   const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([
-    { from: "bot", text: "👋 Hi there! Welcome to DineOut. May I know your name?" },
-  ]);
+  const [messages, setMessages] = useState([]);   // 👈 start empty; we’ll set first msg in useEffect
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    // we keep only preference-related stuff here
     mealType: "",
     preference: "",
     allergy: "",
     spice: "",
     request: "",
   });
-  const [stage, setStage] = useState("askName");
+  const [stage, setStage] = useState("start");    // 👈 no askName/askEmail
   const [hasOrderedOnce, setHasOrderedOnce] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Set initial greeting based on logged-in user
+  useEffect(() => {
+    if (messages.length > 0) return; // don’t override if already set
+
+    const displayName = user?.name || "there";
+    const initialMessages = [
+      {
+        from: "bot",
+        text: `👋 Hi ${displayName}! Welcome to DineOut.`,
+      },
+      {
+        from: "bot",
+        text: "How would you like to continue?",
+        options: ["Proceed with me", "Display full menu"],
+      },
+    ];
+    setMessages(initialMessages);
+    setStage("start");
+  }, [user, messages.length]);
 
   const addMessage = (from, text, options = null) => {
     setMessages((prev) => [...prev, { from, text, options }]);
@@ -106,10 +131,16 @@ const Assistant = () => {
   const handleOrder = async () => {
     if (cart.length === 0) return alert("Your cart is empty!");
 
+    // if user not logged in, block order (optional but recommended)
+    if (!user) {
+      alert("Please log in to place an order.");
+      return navigate("/login");
+    }
+
     const orderData = {
-      name: userData.name,
-      email: userData.email,
-      phone: userData.phone || "",
+      name: user.name || "",     // 👈 from logged-in user
+      email: user.email || "",
+      phone: user.phone || "",
       items: cart,                        // array of strings
       totalCost: cart.length * 150,       // Example cost
       tableNo: "T1",
@@ -198,18 +229,8 @@ const Assistant = () => {
   const handleUserInput = (text) => {
     addMessage("user", text);
 
-    if (stage === "askName") {
-      setUserData((prev) => ({ ...prev, name: text }));
-      addMessage("bot", `Nice to meet you, ${text}! Can I have your email? 📧`);
-      setStage("askEmail");
-    } else if (stage === "askEmail") {
-      setUserData((prev) => ({ ...prev, email: text }));
-      addMessage("bot", `Thanks! Would you like to continue?`, [
-        "Proceed with me",
-        "Display full menu",
-      ]);
-      setStage("start");
-    } else if (stage === "preference") {
+    // 🔥 Removed askName / askEmail stages
+    if (stage === "preference") {
       setUserData((prev) => ({ ...prev, preference: text }));
       addMessage("bot", "Do you have any allergies?");
       setStage("allergy");
@@ -320,7 +341,8 @@ Return only a JSON array like ["Dish1", "Dish2"].
           <div ref={chatEndRef} />
         </div>
 
-        {["askName","askEmail","preference","allergy","request","preferenceOnly"].includes(stage) && (
+        {/* text input only for preference/allergy/request stages */}
+        {["preference", "allergy", "request", "preferenceOnly"].includes(stage) && (
           <div className="chat-input-box">
             <input
               className="chat-input"

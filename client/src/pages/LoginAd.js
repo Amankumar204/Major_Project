@@ -5,7 +5,7 @@ import "../styles/Login.css";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginAd() {
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ export default function LoginAd() {
   async function login(e) {
     e.preventDefault();
     try {
-      // ✅ new correct endpoint
-      const res = await API.post("/admin/login", { phone, password });
+      // 🔑 Use email instead of phone
+      const res = await API.post("/admin/login", { email, password });
 
       // store token & role
       localStorage.setItem("token", res.data.token);
@@ -38,19 +38,21 @@ export default function LoginAd() {
         <p>Manage and monitor your restaurant system.</p>
 
         <form onSubmit={login}>
-          <label htmlFor="phone">Phone Number</label>
+          {/* EMAIL FIELD */}
+          <label htmlFor="email">Email</label>
           <div className="input-group">
             <input
-              type="tel"
-              id="phone"
-              placeholder="+91 90000 00000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              type="email"
+              id="email"
+              placeholder="admin@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <span className="icon">📞</span>
+            <span className="icon">📧</span>
           </div>
 
+          {/* PASSWORD FIELD */}
           <label htmlFor="password">Password</label>
           <div className="input-group">
             <input

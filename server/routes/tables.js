@@ -44,4 +44,40 @@ router.post('/occupy/:id', auth, async (req, res) => {
   } catch (err) { res.status(500).json({ err: err.message }); }
 });
 
+// get list of occupied tables
+router.get('/occupied', async (req, res) => {
+  try {
+    const occupiedTables = await Table.find({ status: 'occupied' }).sort('number');
+
+    res.json({
+      occupiedTables: occupiedTables.map(t => t.number),
+    });
+  } catch (err) {
+    console.error("Occupied tables error:", err);
+    res.status(500).json({ message: "Failed to fetch occupied tables" });
+  }
+});
+
+// one-time: initialize tables 1–9 as available
+router.post('/init', async (req, res) => {
+  try {
+    const existing = await Table.countDocuments();
+    if (existing > 0) {
+      return res.status(400).json({ msg: 'Tables already initialized' });
+    }
+
+    const tablesToCreate = Array.from({ length: 9 }, (_, i) => ({
+      number: i + 1,
+      status: 'available',
+      heldBy: null,
+      holdExpiresAt: null,
+    }));
+
+    const created = await Table.insertMany(tablesToCreate);
+    res.json({ msg: 'Tables initialized', tables: created });
+  } catch (err) {
+    console.error('Table init error:', err);
+    res.status(500).json({ msg: 'Failed to init tables', error: err.message });
+  }
+});
 module.exports = router;

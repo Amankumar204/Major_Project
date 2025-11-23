@@ -36,12 +36,17 @@ router.post("/signup", async (req, res) => {
 // ✅ POST /api/admin/login — authenticate admin
 router.post("/login", async (req, res) => {
   try {
-    const { phone, password } = req.body;
-    if (!phone || !password) {
-      return res.status(400).json({ message: "Phone and password required" });
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password required" });
     }
 
-    const admin = await Admin.findOne({ phone });
+    const normEmail = email.toLowerCase().trim();
+
+    const admin = await Admin.findOne({ email: normEmail });
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
@@ -63,8 +68,8 @@ router.post("/login", async (req, res) => {
       admin: {
         id: admin._id,
         name: admin.name,
-        phone: admin.phone,
         email: admin.email,
+        phone: admin.phone, // keep if you still store it
       },
     });
   } catch (err) {
