@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/thankyou.css";
+
 import API from "../api";
 function Stars({ value, onChange }) {
   return (

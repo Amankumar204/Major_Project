@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-import "../styles/afterOrder.css";
 
 const socket = io(process.env.REACT_APP_API_BASE || "http://localhost:5000", {
   transports: ["websocket"],

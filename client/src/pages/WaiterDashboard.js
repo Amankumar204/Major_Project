@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import API from "../api";
 import { menu } from "../data/menu"; // local static menu
-import "../styles/WaiterDashboard.css";
+
 
 export default function WaiterDashboard() {
   // ----- Ready orders list -----

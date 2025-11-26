@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import API from "../api";
-import "../styles/CookDashboard.css";
+
 
 export default function CookDashboard() {
   const [orders, setOrders] = useState([]);

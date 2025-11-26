@@ -18,7 +18,7 @@ import {
   Legend,
   CartesianGrid,
 } from "recharts";
-import "../styles/AdminDashboard.css";
+
 
 export default function AdminDashboard() {
   const [activePanel, setActivePanel] = useState("overview");

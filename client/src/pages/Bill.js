@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import API from "../api";
-import "../styles/Bill.css";
+
 
 export default function Bill() {
   const { state } = useLocation();
