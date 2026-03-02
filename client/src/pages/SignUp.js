@@ -1,19 +1,28 @@
-// src/pages/SmartDineSignup.jsx
+// src/pages/Signup.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import * as THREE from "three";
 import {
   Utensils,
+  User,
+  Phone,
   Mail,
   Lock,
   ArrowRight,
-  User,
-  Phone,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  EyeOff,
+  CheckCircle
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import API from "../api"; // Assuming your API file is configured
 
-const SmartDineSignup = () => {
+import API from "../api"; // Consistent with your other files
+import { Link, useNavigate } from "react-router-dom";
+
+const Signup = () => {
+  const canvasRef = useRef(null);
+  const navigate = useNavigate();
+
+  // --- Form State ---
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -21,161 +30,281 @@ const SmartDineSignup = () => {
     password: "",
   });
 
-  const navigate = useNavigate();
+  // --- UI State ---
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const hideModal = () => setModalOpen(false);
+  // --- Modal State ---
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("error"); // 'error' or 'success'
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
 
-  // Update form state
+  const hideModal = () => {
+    setModalOpen(false);
+    if (modalType === "success") {
+      navigate("/login"); // Redirect to login on success dismissal
+    }
+  };
+
+  // Handle Input Change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.id]: e.target.value });
   };
 
-  // ✍️ SIGNUP LOGIC
+  // 📝 HANDLE SIGNUP
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setIsSuccess(false);
-    setModalOpen(false); // Clear previous modal
 
     try {
-      // NOTE: You used "http://localhost:5000/signup" in your original code. 
-      // I am replacing this with a generic API call structure for React context consistency.
-      const response = await API.post("/auth/signup/waiter", {
-        // Assuming your backend expects these fields
-        fullName: form.name,
-        phoneNumber: form.phone,
-        email: form.email,
-        password: form.password,
-        role: 'waiter' // Assuming this signup is specifically for a Waiter role
-      });
+      // Using API instance instead of fetch for consistency
+      // Adjust the endpoint URL if your backend route is different (e.g., "/auth/signup")
+      const response = await API.post("/auth/register", form);
 
-      if (response.status === 201 || response.status === 200) {
-        setIsSuccess(true);
-        setModalTitle("Account Created! 🎉");
-        setModalMessage("Your SmartDine waiter account was created successfully. You can now log in.");
-        setModalOpen(true);
-        // Clear form after successful submission
-        setForm({ name: "", phone: "", email: "", password: "" });
-        // Optional: Redirect to login after a delay
-        setTimeout(() => navigate("/login"), 2000); 
+      setIsSuccess(true);
+      setModalType("success");
+      setModalTitle("Account Created!");
+      setModalMessage("Welcome to Smart Dine. You can now log in.");
+      setModalOpen(true);
+      
+      // Clear form
+      setForm({ name: "", phone: "", email: "", password: "" });
 
-      } else {
-        // Handle specific server-side errors
-        setIsSuccess(false);
-        setModalTitle("Registration Failed");
-        setModalMessage(response.data.message || "An unknown error occurred during registration.");
-        setModalOpen(true);
-      }
     } catch (err) {
       console.error(err);
       setIsSuccess(false);
-      setModalTitle("Server Error ⚠️");
-      setModalMessage("Could not connect to the server. Please check your network or try again.");
+      setModalType("error");
+      setModalTitle("Signup Failed");
+      setModalMessage(
+        err?.response?.data?.message || "Server error, please try again later."
+      );
       setModalOpen(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --- RENDER ---
+  // --- THREE.JS BACKGROUND ---
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0f172a, 0.002);
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      1,
+      1000
+    );
+    camera.position.z = 100;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const particleCount = 700;
+    const geometry = new THREE.BufferGeometry();
+    const positions = [];
+    const sizes = [];
+    const speeds = [];
+
+    for (let i = 0; i < particleCount; i++) {
+      positions.push((Math.random() * 2 - 1) * 300);
+      positions.push((Math.random() * 2 - 1) * 200);
+      positions.push((Math.random() * 2 - 1) * 100);
+
+      sizes.push(Math.random() * 2);
+      speeds.push(Math.random() * 0.2 + 0.05);
+    }
+
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute("size", new THREE.Float32BufferAttribute(sizes, 1));
+    geometry.userData = { speeds: speeds };
+
+    const getTexture = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 32;
+      canvas.height = 32;
+      const ctx = canvas.getContext("2d");
+      const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 32, 32);
+      const texture = new THREE.CanvasTexture(canvas);
+      return texture;
+    };
+
+    // Orange/Amber theme for general signup
+    const material = new THREE.PointsMaterial({
+      color: 0xf97316, // Orange-500
+      size: 1.5,
+      map: getTexture(),
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    const onMouseMove = (event) => {
+      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+
+    let animationId;
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+
+      const positions = particles.geometry.attributes.position.array;
+      const speeds = particles.geometry.userData.speeds;
+
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3 + 1] += speeds[i];
+        if (positions[i * 3 + 1] > 100) {
+          positions[i * 3 + 1] = -100;
+          positions[i * 3] = (Math.random() * 2 - 1) * 300;
+        }
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
+
+      particles.rotation.x += 0.0005;
+      particles.rotation.y += 0.0005;
+
+      camera.position.x += (mouseX * 10 - camera.position.x) * 0.05;
+      camera.position.y += (-mouseY * 10 - camera.position.y) * 0.05;
+      camera.lookAt(scene.position);
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+    document.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("resize", onResize);
+
+    function onResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      document.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("resize", onResize);
+      renderer.dispose();
+      geometry.dispose();
+      material.dispose();
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen overflow-hidden font-sans antialiased text-white relative bg-[#0f172a]">
-      
-      {/* 1. BACKGROUND IMAGE & DARK OVERLAY (Same as Login) */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" 
-          className="w-full h-full object-cover" 
-          alt="Restaurant Ambience" 
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/80 to-black/90"></div>
-      </div>
+    <div className="min-h-screen overflow-hidden font-sans antialiased text-white relative">
 
-      {/* 2. MAIN CONTENT */}
-      <div className="flex items-center justify-center w-full h-screen relative z-10 p-4 animate-fade-in">
-        <div className="relative w-full max-w-[450px]">
-          
-          {/* SIGNUP CARD - Dark Glassmorphism */}
-          <div className="bg-[#111827]/60 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8 sm:p-10 ring-1 ring-white/5 relative overflow-hidden">
-            
-            {/* Top Orange Line Accent */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-400" />
+      {/* Background Image & Overlay */}
+      <div className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')",
+        }}
+      />
+      <div className="fixed inset-0 z-1"
+        style={{ backgroundColor: "rgba(15, 23, 42, 0.90)" }}
+      />
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 z-2 pointer-events-none opacity-80"
+      />
 
-            {/* HEADER SECTION */}
-            <div className="text-center mb-10 mt-2">
-              <div className="mx-auto w-fit mb-6 flex items-center gap-3 justify-center">
-                <div className="relative flex items-center justify-center w-12 h-12">
-                  <div className="w-10 h-10 bg-orange-500 rotate-45 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/40">
-                     <Utensils className="w-6 h-6 text-white -rotate-45 stroke-[2.5]" />
-                  </div>
-                </div>
-                <div className="text-left">
-                  <h1 className="text-2xl font-black tracking-tight text-white leading-none">
-                    SmartDine
-                  </h1>
-                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-orange-400 mt-1">
-                    New Account
-                  </p>
-                </div>
+      {/* Main Container */}
+      <div className="flex items-center justify-center w-full min-h-screen relative z-10 px-4 py-10">
+        <div className="w-full max-w-[420px] animate-fade-in-up">
+
+          <div className="bg-gray-900/60 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 border border-white/10 relative overflow-hidden">
+            {/* Gradient Top Bar */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600" />
+
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 shadow-lg shadow-orange-500/20 mb-6 transform rotate-3 hover:rotate-6 transition-transform">
+                <Utensils className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-bold text-gray-100">Create Your Account</h2>
-              <p className="text-gray-400 mt-2 text-sm">
-                Secure your experience by creating your login.
+
+              <h1 className="text-3xl font-black tracking-tight text-white mb-2">
+                Create Account
+              </h1>
+              <p className="text-gray-400 text-sm font-medium">
+                Join Smart Dine today.
               </p>
             </div>
 
-            {/* FORM */}
             <form className="space-y-4" onSubmit={handleSignup}>
-              
-              {/* Name Input */}
+
+              {/* NAME */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase text-gray-400 ml-1 tracking-wider" htmlFor="name">
+                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider ml-1">
                   Full Name
                 </label>
                 <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className="h-5 w-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  </div>
                   <input
                     type="text"
                     id="name"
-                    placeholder="John Doe"
+                    placeholder="Enter your full name"
                     required
                     value={form.name}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-white placeholder-gray-600 outline-none font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-gray-800/50 border border-gray-700 text-white placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all outline-none text-sm font-medium"
                   />
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 </div>
               </div>
 
-              {/* Phone Input */}
+              {/* PHONE */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase text-gray-400 ml-1 tracking-wider" htmlFor="phone">
+                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider ml-1">
                   Phone Number
                 </label>
                 <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Phone className="h-5 w-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  </div>
                   <input
                     type="tel"
                     id="phone"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+1 (555) 000-0000"
                     required
                     value={form.phone}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-white placeholder-gray-600 outline-none font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-gray-800/50 border border-gray-700 text-white placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all outline-none text-sm font-medium"
                   />
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 </div>
               </div>
 
-              {/* Email Input */}
+              {/* EMAIL */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase text-gray-400 ml-1 tracking-wider" htmlFor="email">
+                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider ml-1">
                   Email Address
                 </label>
                 <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  </div>
                   <input
                     type="email"
                     id="email"
@@ -183,93 +312,122 @@ const SmartDineSignup = () => {
                     required
                     value={form.email}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-white placeholder-gray-600 outline-none font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-gray-800/50 border border-gray-700 text-white placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all outline-none text-sm font-medium"
                   />
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
                 </div>
               </div>
 
-              {/* Password Input */}
+              {/* PASSWORD */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase text-gray-400 ml-1 tracking-wider" htmlFor="password">
+                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider ml-1">
                   Password
                 </label>
                 <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+                  </div>
+
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     placeholder="Create a strong password"
                     required
                     value={form.password}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-900/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-white placeholder-gray-600 outline-none font-medium"
+                    // Prevent native browser eye icon
+                    className="w-full pl-11 pr-12 py-3 bg-gray-800/50 border border-gray-700 text-white placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all outline-none text-sm font-medium [&::-webkit-password-reveal-button]:hidden [&::-ms-reveal]:hidden"
                   />
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-orange-500 transition-colors" />
+
+                  {/* Toggle Password Visibility */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-1 right-1 px-2 flex items-center 
+                      bg-gray-700/40 hover:bg-orange-500/20 
+                      rounded-lg transition-all text-orange-300 cursor-pointer"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* SIGN UP BUTTON */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full flex items-center justify-center gap-2 py-4 px-6 mt-6 text-white font-bold text-lg rounded-xl shadow-lg shadow-orange-500/20 transform hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] ${
-                  isSuccess
-                    ? "bg-green-600 hover:bg-green-500"
-                    : "bg-orange-600 hover:bg-orange-500"
-                } ${isLoading ? "opacity-80 cursor-wait" : ""}`}
+                className={`w-full flex items-center justify-center gap-2 py-4 px-6 mt-4 rounded-xl shadow-lg font-bold text-white transition-all duration-200 transform active:scale-[0.98] ${isLoading
+                    ? "opacity-80 cursor-wait"
+                    : isSuccess
+                      ? "bg-green-600 hover:bg-green-500 shadow-green-900/20"
+                      : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-orange-900/20"
+                  }`}
               >
                 {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Creating Account...</span>
+                  </>
                 ) : isSuccess ? (
-                  "Registered!"
+                  <span>Success!</span>
                 ) : (
                   <>
-                    Sign Up <ArrowRight className="w-5 h-5" />
+                    <span>Sign Up</span>
+                    <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </button>
             </form>
-          </div>
 
-          {/* Bottom Login Link */}
-          <div className="text-center mt-8">
-            <p className="text-gray-400 text-sm font-medium">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-orange-400 hover:text-orange-300 font-bold hover:underline ml-1"
-              >
-                Login
-              </Link>
-            </p>
+            {/* FOOTER */}
+            <div className="mt-8 pt-6 border-t border-white/10 text-center">
+              <p className="text-gray-400 text-sm">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-white font-semibold hover:text-orange-500 transition-colors"
+                >
+                  Login here
+                </Link>
+              </p>
+            </div>
+
           </div>
         </div>
       </div>
 
-      {/* ALERT MODAL (Same as Login) */}
+      {/* RESULT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className={`p-8 rounded-2xl shadow-2xl w-full max-w-sm animate-bounce-small text-center ${isSuccess ? 'bg-green-900/40 border-green-800' : 'bg-[#111827] border-gray-800'}`}>
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto ${isSuccess ? 'bg-green-800/30' : 'bg-red-900/30'}`}>
-              <AlertCircle className={`w-6 h-6 ${isSuccess ? 'text-green-500' : 'text-red-500'}`} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-gray-900 border border-white/10 p-6 rounded-2xl shadow-2xl w-full max-w-xs text-center relative">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              modalType === "success" ? "bg-green-500/10" : "bg-red-500/10"
+            }`}>
+              {modalType === "success" ? (
+                <CheckCircle className="w-6 h-6 text-green-500" />
+              ) : (
+                <AlertCircle className="w-6 h-6 text-red-500" />
+              )}
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">
-              {modalTitle}
-            </h3>
-            <p className="text-gray-400 mb-6 text-sm">
+            <h3 className="text-lg font-bold text-white mb-2">{modalTitle}</h3>
+            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               {modalMessage}
             </p>
             <button
               onClick={hideModal}
-              className="w-full py-3 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-colors"
+              className="w-full py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors border border-gray-700"
             >
-              Dismiss
+              {modalType === "success" ? "Go to Login" : "Try Again"}
             </button>
           </div>
         </div>
       )}
+
     </div>
   );
 };
 
-export default SmartDineSignup;
+export default Signup;

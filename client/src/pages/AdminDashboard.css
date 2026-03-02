@@ -1,0 +1,1129 @@
+/* =========================================================
+   SMARTDINE — ADMIN DASHBOARD
+   Dark Glass UI (Cook / Waiter Consistent)
+========================================================= */
+
+/* ================= ROOT ================= */
+
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(99,102,241,0.18), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(249,115,22,0.14), transparent 45%),
+    linear-gradient(180deg, #05060f, #020617);
+  color: #e5e7eb;
+  font-family: "Inter", system-ui, -apple-system;
+}
+
+/* ================= SIDEBAR ================= */
+
+.admin-sidebar {
+  width: 260px;
+  padding: 1.6rem 1.2rem;
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.95),
+    rgba(2,6,23,0.95)
+  );
+  border-right: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.sidebar-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  color: #c7d2fe;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-btn:hover {
+  background: rgba(99,102,241,0.18);
+  color: #fff;
+}
+
+.sidebar-btn.active {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(99,102,241,0.45);
+}
+
+/* ================= CONTENT ================= */
+
+.admin-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2.2rem;
+}
+
+/* ================= ANIMATION ================= */
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= GLASS CARD ================= */
+
+.analytics-card,
+.glass-card {
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.65),
+    rgba(2,6,23,0.75)
+  );
+  border-radius: 20px;
+  padding: 1.4rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 20px 45px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ================= HEADINGS ================= */
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.8rem;
+}
+
+/* ================= SALES ================= */
+
+.sales-panel { width: 100%; }
+
+.sales-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.6rem;
+}
+
+.sales-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sales-subtitle {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.sales-range-pill {
+  background: rgba(99,102,241,0.18);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  color: #c7d2fe;
+  font-weight: 600;
+}
+
+.sales-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.sales-range-select {
+  background: rgba(2,6,23,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.45rem 0.6rem;
+}
+
+/* ================= METRICS ================= */
+
+.sales-metric-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.sales-metric-value {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sales-metric-sub {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ================= REQUESTS ================= */
+
+.rq-container { width: 100%; }
+
+.rq-toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.4rem;
+}
+
+.rq-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.rq-sub {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.rq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+
+.rq-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.rq-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rq-chip {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.rq-chip.pending {
+  background: rgba(249,115,22,0.18);
+  color: #fb923c;
+}
+
+.rq-chip.approved {
+  background: rgba(34,197,94,0.18);
+  color: #4ade80;
+}
+
+.rq-chip.rejected {
+  background: rgba(239,68,68,0.2);
+  color: #f87171;
+}
+
+.rq-name {
+  font-weight: 700;
+  color: #fff;
+}
+
+.rq-price {
+  color: #fbbf24;
+  margin-left: 0.4rem;
+}
+
+.rq-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rq-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.rq-label { color: #9ca3af; }
+.rq-value { color: #e5e7eb; }
+
+.rq-card-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.rq-btn {
+  flex: 1;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.rq-btn--approve {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  color: #fff;
+}
+
+.rq-btn--reject {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  color: #fff;
+}
+
+/* ================= MANAGE STAFF ================= */
+
+/* =================================================
+   MANAGE STAFF — DARK GLASS UI
+   Uses ONLY existing ms-* classnames
+================================================= */
+
+/* ---------- TOOLBAR ---------- */
+
+.ms-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+}
+
+/* ---------- TABS ---------- */
+
+.ms-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.ms-tab {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #c7d2fe;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.ms-tab:hover {
+  background: rgba(99,102,241,0.18);
+  color: #ffffff;
+}
+
+.ms-tab.active {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(99,102,241,0.45);
+}
+
+/* ---------- SEARCH ---------- */
+
+.ms-search {
+  min-width: 260px;
+  background: rgba(2,6,23,0.75);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.ms-search::placeholder {
+  color: #6b7280;
+}
+
+.ms-search:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.35);
+}
+
+/* ---------- GRID ---------- */
+
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.4rem;
+}
+
+/* ---------- STAFF CARD ---------- */
+
+.ms-card {
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.65),
+    rgba(2,6,23,0.75)
+  );
+  border-radius: 18px;
+  padding: 1.1rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ---------- CARD HEADER ---------- */
+
+.ms-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ms-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ms-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ms-role {
+  font-size: 0.7rem;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- CARD BODY ---------- */
+
+.ms-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.ms-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+}
+
+.ms-label {
+  color: #9ca3af;
+}
+
+.ms-value {
+  color: #e5e7eb;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ---------- ACTIONS ---------- */
+
+.ms-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+/* ---------- BUTTONS ---------- */
+
+.ms-btn {
+  flex: 1;
+  border-radius: 12px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s ease;
+}
+
+.ms-btn--success {
+  background: rgba(34,197,94,0.18);
+  color: #4ade80;
+}
+
+.ms-btn--success:hover {
+  background: rgba(34,197,94,0.28);
+}
+
+.ms-btn--danger {
+  background: rgba(239,68,68,0.2);
+  color: #f87171;
+}
+
+.ms-btn--danger:hover {
+  background: rgba(239,68,68,0.32);
+}
+
+.ms-btn--primary {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(99,102,241,0.45);
+}
+
+.ms-btn--ghost {
+  background: transparent;
+  color: #c7d2fe;
+}
+
+/* ---------- EMPTY / LOADING ---------- */
+
+.ms-muted {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+/* ---------- MODAL ---------- */
+
+.ms-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.ms-modal {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.9),
+    rgba(2,6,23,0.95)
+  );
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 1.4rem;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+}
+
+.ms-modal__header {
+  margin-bottom: 1rem;
+}
+
+.ms-modal__title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.ms-modal__subtitle {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.ms-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.ms-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ms-field span {
+  font-size: 0.75rem;
+  color: #c7d2fe;
+  font-weight: 600;
+}
+
+.ms-field input,
+.ms-field select,
+.ms-field textarea {
+  background: rgba(2,6,23,0.8);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+.ms-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+/* =================================================
+   ADD DISH — DARK GLASS UPGRADE
+================================================= */
+
+.add-dish-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 1.5rem;
+}
+
+/* ---------- CARD ---------- */
+
+.add-dish-card {
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.75),
+    rgba(2,6,23,0.85)
+  );
+  border-radius: 22px;
+  padding: 1.6rem 1.8rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 28px 60px rgba(0,0,0,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* ---------- TITLE ---------- */
+
+.add-dish-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.add-dish-sub {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 1.2rem;
+}
+
+/* ---------- FORM ---------- */
+
+.add-dish-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* reuse .form-group safely */
+.add-dish-form .form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #c7d2fe;
+}
+
+.add-dish-form .form-group input,
+.add-dish-form .form-group select {
+  background: rgba(2,6,23,0.85);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 0.7rem 0.85rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.add-dish-form .form-group input::placeholder {
+  color: #6b7280;
+}
+
+.add-dish-form .form-group input:focus,
+.add-dish-form .form-group select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.35);
+}
+
+/* ---------- BUTTON ---------- */
+
+.add-dish-btn {
+  margin-top: 0.8rem;
+  background: linear-gradient(90deg, #f97316, #fb923c);
+  border: none;
+  border-radius: 16px;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(249,115,22,0.45);
+  transition: all 0.2s ease;
+}
+
+.add-dish-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 38px rgba(249,115,22,0.6);
+}
+
+.add-dish-btn.loading {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 640px) {
+  .add-dish-card {
+    padding: 1.4rem;
+    border-radius: 18px;
+  }
+}
+
+/* =================================================
+   ADD STAFF — DARK GLASS FORM
+================================================= */
+
+.add-staff-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 1.6rem;
+}
+
+/* ---------- CARD ---------- */
+
+.add-staff-card {
+  width: 100%;
+  max-width: 540px;
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.75),
+    rgba(2,6,23,0.85)
+  );
+  border-radius: 22px;
+  padding: 1.6rem 1.8rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 28px 60px rgba(0,0,0,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* ---------- TITLE ---------- */
+
+.add-staff-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.add-staff-sub {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 1.2rem;
+}
+
+/* ---------- FORM ---------- */
+
+.add-staff-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* reuse .form-group safely */
+.add-staff-form .form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #c7d2fe;
+}
+
+.add-staff-form .form-group input,
+.add-staff-form .form-group select {
+  width: 100%;
+  background: rgba(2,6,23,0.85);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 0.7rem 0.85rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.add-staff-form .form-group input::placeholder {
+  color: #6b7280;
+}
+
+.add-staff-form .form-group input:focus,
+.add-staff-form .form-group select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.35);
+}
+
+/* ---------- BUTTON ---------- */
+
+.add-staff-btn {
+  margin-top: 0.8rem;
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  border: none;
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 12px 32px rgba(99,102,241,0.5);
+  transition: all 0.2s ease;
+}
+
+.add-staff-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(99,102,241,0.65);
+}
+
+.add-staff-btn.loading {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 640px) {
+  .add-staff-card {
+    padding: 1.4rem;
+    border-radius: 18px;
+  }
+}
+
+/* ===============================
+   USERS & COUPONS — DARK GLASS
+   Matches Cook / Waiter / Admin
+================================ */
+
+.uc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  color: #e5e7eb;
+}
+
+/* ---------- HEADER ---------- */
+
+.uc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.uc-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.uc-subtitle {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-top: 0.2rem;
+}
+
+.uc-header-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- INPUTS ---------- */
+
+.uc-search,
+.uc-segment-select {
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 0.6rem 0.8rem;
+  color: #ffffff;
+}
+
+.uc-search::placeholder {
+  color: #6b7280;
+}
+
+.uc-search:focus,
+.uc-segment-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+}
+
+/* ---------- BUTTONS ---------- */
+
+.uc-btn {
+  border-radius: 14px;
+  padding: 0.6rem 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.uc-btn-gradient {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.45);
+}
+
+.uc-btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.6);
+}
+
+.uc-btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #c7d2fe;
+}
+
+/* ---------- STATUS ---------- */
+
+.uc-muted {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.uc-muted-small {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+
+.uc-error {
+  color: #f87171;
+  font-weight: 600;
+}
+
+/* ---------- METRICS ---------- */
+
+.uc-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+}
+
+.uc-metric-card {
+  padding: 1.2rem;
+}
+
+.uc-metric-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.uc-metric-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 0.25rem;
+}
+
+/* ---------- GRID ---------- */
+
+.uc-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.4rem;
+}
+
+/* ---------- SEGMENT CARD ---------- */
+
+.uc-segment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.uc-segment-pill {
+  display: inline-block;
+  background: rgba(99,102,241,0.18);
+  color: #c7d2fe;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.uc-segment-tips {
+  list-style: none;
+  padding: 0;
+  margin: 0.6rem 0 0;
+}
+
+.uc-segment-tips li {
+  font-size: 0.8rem;
+  color: #cbd5f5;
+  margin-bottom: 0.3rem;
+}
+
+.uc-segment-tips span {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ---------- USERS TABLE ---------- */
+
+.uc-users-card {
+  overflow: hidden;
+}
+
+.uc-users-header {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.uc-users-table-wrapper {
+  overflow-x: auto;
+}
+
+.uc-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.uc-users-table th {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  color: #9ca3af;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.uc-users-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.uc-users-table tr:hover {
+  background: rgba(99,102,241,0.08);
+}
+
+.uc-users-empty {
+  padding: 1.4rem;
+  text-align: center;
+}
+
+/* ---------- SEND COUPON CHIP ---------- */
+
+.uc-chip-btn {
+  background: rgba(34,197,94,0.18);
+  color: #4ade80;
+  border: 1px solid rgba(34,197,94,0.35);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ---------- MODAL ---------- */
+
+.uc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.uc-modal {
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(
+    180deg,
+    rgba(15,23,42,0.85),
+    rgba(2,6,23,0.95)
+  );
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.7);
+  padding: 1.4rem;
+}
+
+.uc-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.uc-modal-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.uc-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.uc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.uc-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #c7d2fe;
+}
+
+.uc-field input,
+.uc-field select,
+.uc-field textarea {
+  background: rgba(2,6,23,0.8);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 0.55rem 0.7rem;
+  color: #ffffff;
+}
+
+.uc-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.uc-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}

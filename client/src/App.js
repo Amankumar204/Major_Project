@@ -1,4 +1,5 @@
 import React from 'react';
+import "./index.css"
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './pages/Login';
 import Tables from './pages/TableMap';
@@ -17,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Bill from "./pages/Bill";
 import ThankYou from "./pages/Thankyou";
 import HomePage from "./pages/HomePage";
+
 function App() {
   return (
     <Router>

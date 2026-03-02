@@ -4,6 +4,7 @@ import AdminSidebar from "../components/AdminSidebar";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import UsersCoupons from "../components/UsersCoupons";
+import "./AdminDashboard.css";
 
 import {
   BarChart,
@@ -1321,12 +1322,52 @@ export default function AdminDashboard() {
     }
   };
 
-  return (
-    <div className="admin-layout flex">
-      <AdminSidebar active={activePanel} setActive={setActivePanel} />
-      <div className="admin-content flex-1 p-6 overflow-y-auto bg-gray-50 min-h-screen">
-        {renderPanel()}
+
+
+return (
+  <div className="admin-layout">
+    <AdminSidebar active={activePanel} setActive={setActivePanel} />
+
+    <main className="admin-content">
+      {/* ===== ADMIN TOP HEADER ===== */}
+      <div className="admin-header">
+        <div>
+          <h1 className="admin-title">
+            {activePanel === "overview" && "Admin Overview"}
+            {activePanel === "add-staff" && "Add Staff"}
+            {activePanel === "manage-staff" && "Manage Staff"}
+            {activePanel === "add-dish" && "Add Dish"}
+            {activePanel === "requests" && "Requests"}
+            {activePanel === "sales" && "Sales Analytics"}
+            {activePanel === "users" && "Users & Coupons"}
+          </h1>
+
+          <p className="admin-subtitle">
+            {activePanel === "overview" &&
+              "Control staff, menu, orders and business insights"}
+            {activePanel === "add-staff" &&
+              "Create new staff accounts with roles & access"}
+            {activePanel === "manage-staff" &&
+              "Search, pay and manage your staff"}
+            {activePanel === "add-dish" &&
+              "Expand your menu with new items"}
+            {activePanel === "requests" &&
+              "Review and approve staff requests"}
+            {activePanel === "sales" &&
+              "Track revenue, customers and performance"}
+            {activePanel === "users" &&
+              "Understand customers and send coupons"}
+          </p>
+        </div>
       </div>
-    </div>
-  );
+
+      {/* ===== PANEL CONTENT (GLASS WRAPPED) ===== */}
+      <section className="glass-card">
+        {renderPanel()}
+      </section>
+    </main>
+  </div>
+);
+
+
 }
